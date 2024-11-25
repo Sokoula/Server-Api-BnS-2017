@@ -1,0 +1,30 @@
+{ 
+  "name": "Server API", 
+  "version": "1.0.0", 
+  "description": "Server for user registration and login for a gaming server, including profile management and data retrieval.", 
+  "main": "server.js", 
+  "scripts": { 
+    "start": "node server.js" 
+  }, 
+  "dependencies": { 
+    "express": "latest", 
+    "mssql": "latest", 
+    "dotenv": "latest", 
+    "axios": "latest", 
+    "cors": "latest", 
+    "ejs": "latest", 
+    "argon2": "latest", 
+    "bcrypt": "latest", 
+    "chalk": "latest", 
+    "express-session": "latest", 
+    "mysql2": "latest", 
+    "os-utils":"latest", 
+    "pidusage": "latest" 
+  }, 
+  "devDependencies": {}, 
+  "engines": { 
+    "node": ">=14.0.0" 
+  }, 
+  "license": "MIT", 
+  "type": "module" 
+} 
