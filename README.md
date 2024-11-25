@@ -110,7 +110,7 @@ To set up the API server, follow these steps:
 1. **Clone the repository**:
 
     ```bash
-    git clone https://github.com/war100ck/Server-Api-BnS-Server.git
+    git clone git clone https://github.com/war100ck/Server-Api-BnS-2017.git
     cd Server-Api-BnS-Server
     ```
 
