@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>VIP Management</title>
+   <link rel="icon" href="/images/favicon-admin.png" type="image/png">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>VIP Management for
+         <%= userId %>
+      </title>
+      <link href="../css/bootstrap.min.css" rel="stylesheet">
+      <script src="../js/jquery-3.6.0.min.js"></script>
+      <link rel="stylesheet" href="../css/admin.css">
+   </head>
+   <body>
+      <%- include('partials/nav') %>
+      <div class="container mt-5">
+         <div class="container mt-5">
+            <h1 class="mt-4">VIP Management</h1>
+            <p>
+               <strong>User ID:</strong>
+               <%= userId %>
+               <strong>User: <span style="color: green;"><%= userName %></span></strong> I
+               <strong>VIP Level: <span style="color: green;"><%= vipLevel || 'Not assigned' %></span></strong>
+            </p>
+         </div>
+         <!-- Отображение статуса подписки -->
+         <% if (statusMessage) { %>
+         <div id="statusMessage" class="alert 
+            <% 
+               if (statusMessage === 'VIP subscription is being extended') { 
+                   %>alert-info<% 
+               } else if (statusMessage === 'VIP subscription is currently active') { 
+                   %>alert-success<% 
+               } else if (statusMessage === 'VIP subscription has expired') { 
+                   %>alert-danger<% 
+               } else { 
+                   %>alert-warning<% 
+               }
+               %>" role="alert">
+            Subscription Status:
+            <%= statusMessage %>  <% if (statusMessage === 'VIP subscription is being extended') { %>
+            <img src="/images/shop/vip-active.png" alt="VIP Active" style="width: 40px; height: 40px; margin-left: 10px;">
+            <% } else if (statusMessage === 'VIP subscription is currently active') { %>
+            <img src="/images/shop/vip-active.png" alt="VIP Active" style="width: 40px; height: 40px; margin-left: 10px;">
+            <% } else if (statusMessage === 'VIP subscription has expired') { %>
+            <img src="/images/shop/no-vip.png" alt="VIP Expired" style="width: 40px; height: 40px; margin-left: 10px;">
+            <% } %>
+         </div>
+         <% } else { %>
+         <div id="statusMessage" class="alert alert-warning" role="alert">
+            Subscription status not found!
+         </div>
+         <% } %>
+         <!-- Таблица с данными пользователя -->
+         <!-- Данные пользователя -->
+         <% if (typeof memberData !== 'undefined' && memberData) { %>
+         <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+               <h4>User Details</h4>
+            </div>
+            <div class="card-body">
+               <table class="table table-bordered">
+                  <tbody>
+                     <tr>
+                        <td class="text-start"><strong>MemberId</strong></td>
+                        <td class="text-start">
+                           <%= memberData.MemberId %>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="text-start"><strong>AppGroupCode</strong></td>
+                        <td class="text-start">
+                           <%= memberData.AppGroupCode %>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="text-start"><strong>UserId</strong></td>
+                        <td class="text-start">
+                           <%= memberData.UserId %>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="text-start"><strong>GameGradeKey</strong></td>
+                        <td class="text-start">
+                           <%= memberData.GameGradeKey %>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="text-start"><strong>Effective Duration of the first subscription activation</strong></td>
+                        <td class="text-start">
+                           <%= memberData.EffectiveDuration %> days
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="text-start"><strong>Remaining Duration (in seconds)</strong></td>
+                        <td class="text-start">
+                           <%= memberData.RemainingEffectiveDurationPerSecond %> sec
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="text-start"><strong>Start Date of first activated subscription</strong></td>
+                        <td class="text-start">
+                           <%= memberData.FirstFrom ? new Date(memberData.FirstFrom).toLocaleString() : 'Not set' %>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="text-start"><strong>End Date of first subscription activation</strong></td>
+                        <td class="text-start">
+                           <%= memberData.ExpiredTo ? new Date(memberData.ExpiredTo).toLocaleString() : 'Not set' %>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="text-start"><strong>Remaining Time</strong></td>
+                        <td class="text-start">
+                           <%= subscriptionDetails && subscriptionDetails.TotalRemainingTimeFormatted ? subscriptionDetails.TotalRemainingTimeFormatted : 'Not set' %>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="text-start"><strong>Expiration Date</strong></td>
+                        <td class="text-start">
+                           <%= subscriptionDetails && subscriptionDetails.ExpirationDateTime ? new Date(subscriptionDetails.ExpirationDateTime).toLocaleString() : 'Not set' %>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+         <% } %>
+         <!-- Форма для создания подписки -->
+         <form id="vipForm">
+            <input type="hidden" name="userId" value="<%= userId %>">
+            <div class="mb-3 d-flex">
+               <div class="me-3 flex-grow-1">
+                  <label for="duration" class="form-label">Subscription Duration (in days)</label>
+                  <select name="duration" class="form-control" id="duration" required>
+                     <option value="1">1 day</option>
+                     <option value="3">3 days</option>
+                     <option value="7">7 days</option>
+                     <option value="30">30 days</option>
+                     <option value="90">90 days</option>
+                     <option value="365">365 days</option>
+                  </select>
+               </div>
+               <div class="me-3 flex-grow-1">
+                  <label for="gradeScore" class="form-label">GradeScore</label>
+                  <select name="gradeScore" class="form-control" id="gradeScore" required>
+                     <!-- Генерация значений с 100 до 1000 с шагом 100 -->
+                     <option value="100">100</option>
+                     <option value="200">200</option>
+                     <option value="300">300</option>
+                     <option value="400">400</option>
+                     <option value="500">500</option>
+                     <option value="600">600</option>
+                     <option value="700">700</option>
+                     <option value="800">800</option>
+                     <option value="900">900</option>
+                     <option value="1000">1000</option>
+                     <option value="4999">4999 2 Level</option>
+                     <option value="5000">5000 3 Level (only after 2 Level)</option>
+                     <option value="15000">15000 4 Level (only after 3 Level)</option>
+                     <option value="25000">25000 5 Level (only after 4 Level)</option>
+                     <option value="50000">50000 6 Level (only after 5 Level)</option>
+                     <option value="50000">50000 7 Level (only after 6 Level)</option>
+                     <option value="25000">25000 8 Level (only after 7 Level)</option>
+                     <option value="25000">25000 9 Level (only after 8 Level)</option>
+                     <option value="50000">50000 10 Max Level (only after 9 Level)</option>
+                     <option value="250000">250000 10 Max Level Get it right away</option>
+                  </select>
+               </div>
+               <div class="d-flex align-items-end">
+                  <button type="submit" class="btn btn-primary">Create Subscription</button>
+               </div>
+            </div>
+         </form>
+         <!-- Список активных подписок -->
+         <% if (subscriptions && subscriptions.length > 0) { %>
+         <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+               <h4>All subscriptions</h4>
+            </div>
+            <div class="card-body">
+               <table class="table table-striped table-hover">
+                  <thead class="table-dark">
+                     <tr>
+                        <th>Effective Duration (days)</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Registered</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <% subscriptions.forEach(subscription => { %>
+                     <tr>
+                        <td>
+                           <%= subscription.EffectiveDuration %>
+                        </td>
+                        <td>
+                           <%= subscription.FirstFrom ? new Date(subscription.FirstFrom).toLocaleString() : 'Not set' %>
+                        </td>
+                        <td>
+                           <%= subscription.ExpiredTo ? new Date(subscription.ExpiredTo).toLocaleString() : 'Not set' %>
+                        </td>
+                        <td>
+                           <%= subscription.Registered ? new Date(subscription.Registered).toLocaleString() : 'Not set' %>
+                        </td>
+                     </tr>
+                     <% }) %>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+         <% } else { %>
+         <% } %>
+      </div>
+      <script src="../js/bootstrap.bundle.min.js"></script>
+      <script>
+         // Обработчик отправки формы через AJAX
+          $('#vipForm').on('submit', function(e) {
+              e.preventDefault(); // Отменяем стандартное поведение формы
+          
+              var formData = $(this).serialize(); // Собираем данные формы
+          
+              // Отправляем запрос на сервер
+              $.ajax({
+                  url: '/admin/add-vip',
+                  type: 'POST',
+                  data: formData,
+                  success: function(response) {
+                      // Проверяем, был ли запрос успешным
+                      if (response.success) {
+                          // Обновляем статус на странице с серверным сообщением
+                          $('#statusMessage').html('<div class="alert alert-success" role="alert">' + response.message + '</div>');
+                      } else {
+                          // В случае ошибки выводим сообщение
+                          $('#statusMessage').html('<div class="alert alert-danger" role="alert">An error occurred!</div>');
+                      }
+          
+                      // Очистка формы
+                      $('#vipForm')[0].reset();
+                      
+                      // Перезагружаем страницу через 2 секунды
+                      setTimeout(function() {
+                          location.reload();
+                      }, 2000);
+                  },
+                  error: function(error) {
+                      $('#statusMessage').html('<div class="alert alert-danger" role="alert">Error creating subscription!</div>');
+                  }
+              });
+          });
+      </script>
+   </body>
+</html>

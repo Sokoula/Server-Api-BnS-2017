@@ -1,3 +1,4 @@
+// routes/systemStatsRoutes.js
 import express from 'express';
 import os from 'os';
 import osUtils from 'os-utils';

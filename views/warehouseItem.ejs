@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sending Items</title>
+	<link rel="icon" href="/images/favicon-admin.png" type="image/png">
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<style>
+    #searchResults {display: flex;align-items: center;margin-top: -30px;}#searchResults div {margin-left: 20px;}.modal-body {max-height: 600px;overflow-y: auto;}.modal-body p, .modal-body h4 {text-align: left;}#itemList {display: grid;grid-template-columns: repeat(4, 1fr);gap: 20px;}.item-button {display: flex;justify-content: space-between;align-items: center;background: #f8f9fa;border: 1px solid #ddd;padding: 10px;border-radius: 5px;width: 100%;text-align: left;}.item-button img {max-width: 50px;max-height: 50px;}.w-100 {width: 300% !important;}#paginationControls button {margin: 0 5px;}.item-button {display: flex;align-items: center;justify-content: flex-start;background-color: #ffffff;border: 1px solid #ddd;border-radius: 8px;padding: 10px;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);text-align: left;width: 100%;cursor: pointer;transition: transform 0.2s, box-shadow 0.2s;}.item-button:hover {transform: scale(1.03);box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);}.item-button img {flex-shrink: 0;width: 60px;height: 60px;border-radius: 4px;margin-right: 15px;}.item-button .item-text {display: flex;flex-direction: column;justify-content: center;font-size: 14px;line-height: 1.4;color: #333;}.item-button .item-title {font-weight: bold;margin-bottom: 4px;}.item-button .item-description {color: #555;font-size: 12px;}
+</style>
+
+<body>
+    <%- include('partials/nav') %>
+        <div class="container mt-5">
+            <h2>Sending Items</h2>
+            <strong>User ID:</strong> <%= userId %>
+                <!-- Форма поиска по ItemID (динамический поиск) -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <form id="searchForm">
+                            <div class="mb-3">
+                                <label for="searchItemID" class="form-label">Search by Item ID</label>
+                                <input type="text" id="searchItemID" class="form-control" placeholder="Enter Item ID to search">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-6" id="searchResults" style="display:none; display: flex; align-items: center;">
+                        <div>
+                            <h4>Search Results</h4>
+                            <p class="mb-1 lh-sm"><strong>Category:</strong> <span id="resultCategory"></span></p>
+                            <p class="mb-1 lh-sm"><strong>EN Description:</strong> <span id="resultDescription"></span></p>
+                            <p class="mb-1 lh-sm"><strong>CN Description:</strong> <span id="resultCNDescription"></span></p>
+                        </div>
+                        <img id="resultIcon" src="/images/items/default.png" alt="Item Icon" style="max-width: 115px; margin-left: 20px;">
+                    </div>
+                </div>
+				
+				<div id="statusMessage" class="alert alert-success" role="alert">
+                    After sending the item to the character, you need to log out with that character and log back in. The item will then be delivered via in-game mail.
+                </div>
+
+                <!-- Основная форма отправки предмета -->
+                <form action="/process" method="get" class="mt-4" id="addItemForm" onsubmit="sendItem(event)">
+                    <div class="mb-3">
+                        <label for="charname" class="form-label">Select Character Name</label>
+                        <select id="charname" name="charname" class="form-control" required>
+                            <% characters.forEach(function(character) { %>
+                                <option value="<%= character %>">
+                                    <%= character %>
+                                </option>
+                                <% }); %>
+                        </select>
+                    </div>
+
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="itemid" class="form-label">Item ID</label>
+                            <input type="text" id="itemid" name="itemid" class="form-control">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="quantity" class="form-label">Quantity</label>
+                            <input type="number" id="quantity" name="quantity" class="form-control" min="1" required placeholder="Enter quantity (does not work for all items)">
+                        </div>
+                    </div>
+
+                    <!-- Ряд для Category и Item -->
+                    <div class="form-row mb-3">
+                        <div class="col-md-6">
+                            <label for="category" class="form-label">Category</label>
+                            <select id="category" name="category" class="form-control category-select">
+                                <option value="">-- Select Category --</option>
+                                <% Object.keys(categories).forEach(function (categoryKey) { %>
+                                    <option value="<%= categoryKey %>">
+                                        <%= categoryKey %>
+                                    </option>
+                                    <% }); %>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="item" class="form-label">Item</label>
+                            <div class="d-flex align-items-center">
+                                <!-- Добавьте атрибуты для открытия модального окна -->
+                                <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#itemModal" style="width: 87%;">Select Item</button>
+                                <img id="itemIcon" class="item-icon ms-2" src="/images/items/default.png" alt="Item Icon" style="width: 60px; height: 60px;">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="senderDescription" class="form-label">Sender Description</label>
+                        <input type="text" id="senderDescription" name="senderDescription" class="form-control" maxlength="128" placeholder="Input is optional">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="senderMessage" class="form-label">Sender Message</label>
+                        <input type="text" id="senderMessage" name="senderMessage" class="form-control" maxlength="128" placeholder="Input is optional">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Send item</button>
+                </form>
+
+                <!-- Модальное окно для выбора предмета -->
+                <div class="modal fade" id="itemModal" tabindex="-1" aria-labelledby="itemModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="itemModalLabel">Select Item</h5>
+                            </div>
+                            <div class="modal-body">
+                                <div id="itemList"></div>
+                            </div>
+                            <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <div id="paginationControls" style="display: flex; gap: 10px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+        <div id="toastContainer" class="toast-container"></div>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+    let currentPage = 1;
+    const itemsPerPage = 20; // Количество предметов на страницу
+    let allItems = [];
+
+    // Функция для отображения предметов с постраничной навигацией
+    const renderItemsPage = (items) => {
+        const itemList = document.getElementById('itemList');
+        const pagination = document.getElementById('paginationControls');
+        itemList.innerHTML = '';
+        pagination.innerHTML = '';
+
+        // Отображаем 20 предметов на странице в 4 колонки
+        items.forEach(({ ItemID, EN_Description, FileName }) => {
+            const itemButton = document.createElement('button');
+            itemButton.classList.add('item-button');
+            Object.assign(itemButton.dataset, {
+                itemId: ItemID,
+                description: EN_Description,
+                icon: FileName || 'default.png',
+            });
+            itemButton.innerHTML = `
+                <img src="/images/items/${FileName || 'default.png'}" alt="${EN_Description}">
+                <div class="item-text">
+                    <div class="item-title">${EN_Description}</div>
+                    <div class="item-description">ID: ${ItemID}</div>
+                </div>
+            `;
+            itemList.appendChild(itemButton);
+        });
+
+        // Генерация кнопок пагинации
+        const totalPages = Math.ceil(allItems.length / itemsPerPage);
+        const startPage = Math.max(1, currentPage - 2);
+        const endPage = Math.min(totalPages, currentPage + 2);
+
+        const paginationItems = [
+            ...(currentPage > 1
+                ? [
+                      `<button class="btn btn-outline-secondary" onclick="goToPage(1)">First</button>`,
+                      `<button class="btn btn-outline-secondary" onclick="goToPage(${currentPage - 1})">Prev</button>`,
+                  ]
+                : []),
+            ...Array.from(
+                { length: endPage - startPage + 1 },
+                (_, i) =>
+                    `<button class="btn btn-outline-secondary${startPage + i === currentPage ? ' active' : ''}" onclick="goToPage(${startPage + i})">${startPage + i}</button>`
+            ),
+            ...(currentPage < totalPages
+                ? [
+                      `<button class="btn btn-outline-secondary" onclick="goToPage(${currentPage + 1})">Next</button>`,
+                      `<button class="btn btn-outline-secondary" onclick="goToPage(${totalPages})">Last</button>`,
+                  ]
+                : []),
+        ];
+
+        pagination.innerHTML = paginationItems.join(' ');
+    };
+
+    // Переход на указанную страницу
+    const goToPage = (page) => {
+        currentPage = page;
+        fetchItems();
+    };
+
+    // Получение предметов
+    const fetchItems = () => {
+        const categoryKey = document.getElementById('category').value;
+        const items = <%- JSON.stringify(categories) %>[categoryKey] || [];
+        allItems = items;
+
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        renderItemsPage(allItems.slice(startIndex, startIndex + itemsPerPage));
+    };
+
+    // Событие изменения категории
+    document.getElementById('category').addEventListener('change', () => {
+        currentPage = 1;
+        fetchItems();
+    });
+
+    // Выбор предмета
+    document.getElementById('itemList').addEventListener('click', (e) => {
+        const itemButton = e.target.closest('button');
+        if (!itemButton) return;
+
+        const { itemId, description, icon } = itemButton.dataset;
+        document.getElementById('itemid').value = itemId;
+        document.getElementById('itemIcon').src = `/images/items/${icon}`;
+        bootstrap.Modal.getInstance(document.getElementById('itemModal')).hide();
+    });
+
+    // Поиск предмета по ID
+    document.getElementById('searchItemID').addEventListener('input', ({ target: { value: searchQuery } }) => {
+        const trimmedQuery = searchQuery.trim().toLowerCase();
+        const searchResults = document.getElementById('searchResults');
+        if (!trimmedQuery) return (searchResults.style.display = 'none');
+
+        const allCategories = <%- JSON.stringify(categories) %>;
+        let foundItem = null,
+            foundCategory = null;
+
+        for (const [categoryKey, items] of Object.entries(allCategories)) {
+            foundItem = items.find(({ ItemID }) => ItemID.toString() === trimmedQuery);
+            if (foundItem) {
+                foundCategory = categoryKey;
+                break;
+            }
+        }
+
+        if (foundItem) {
+            Object.assign(document.getElementById('resultCategory'), { textContent: foundCategory || 'Unknown' });
+            Object.assign(document.getElementById('resultDescription'), { textContent: foundItem.EN_Description || 'No description' });
+            Object.assign(document.getElementById('resultCNDescription'), { textContent: foundItem.CN_Description || 'No CN description available' });
+            document.getElementById('resultIcon').src = `/images/items/${foundItem.FileName || 'default.png'}`;
+            searchResults.style.display = 'flex';
+        } else {
+            searchResults.style.display = 'none';
+        }
+    });
+
+    // Отправка предмета
+    const sendItem = async (event) => {
+        event.preventDefault();
+        const form = document.getElementById('addItemForm');
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData);
+
+        try {
+            const response = await fetch(`${form.action}?${params.toString()}`, { method: 'GET' });
+            const result = await response.text();
+            const labelID = result.match(/LabelID=(\d+)/)?.[1] || 'Unknown';
+
+            const { charname, itemid, quantity } = Object.fromEntries(formData.entries());
+            const message = `LabelID=${labelID} Added <br> Character "${charname}" has been sent item ID "${itemid}" in quantity "${quantity}".`;
+
+            showToast('success', message);
+            form.reset();
+            fetchItems();
+        } catch (error) {
+            console.error('Ошибка отправки:', error);
+            showToast('error', 'Ошибка отправки. Попробуйте снова.');
+        }
+    };
+
+    // Показ тоста
+    const showToast = (type, message) => {
+        const toastContainer = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-white ${type === 'success' ? 'bg-success' : 'bg-danger'} border-0`;
+        toast.role = 'alert';
+        toast.ariaLive = 'assertive';
+        toast.ariaAtomic = 'true';
+
+        toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        `;
+        toastContainer.appendChild(toast);
+        new bootstrap.Toast(toast).show();
+    };
+</script>
+</body>
+</html>

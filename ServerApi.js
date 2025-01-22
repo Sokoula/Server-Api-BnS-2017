@@ -5,6 +5,7 @@ import sql from 'mssql';
 import cors from 'cors';
 import path from 'path';
 import chalk from 'chalk';
+import fs from 'fs'
 import os from 'os';
 import { fileURLToPath } from 'url';
 import { config } from './config/config.js';
@@ -12,7 +13,7 @@ import { convertFaction, convertSex, convertRace, convertMoney, convertJob, cutS
 import { getOwnerAccId } from './utils/characterUtils.js';
 import { logRegistrationData } from './utils/logUtils.js';
 import './utils/logger.js';
-import { configPlatformAcctDb, configBlGame01, configVirtualCurrencyDb, configLobbyDb, WH_config } from './config/dbConfig.js';
+import { configPlatformAcctDb, configGradeMembersDb, configBlGame01, configVirtualCurrencyDb, configLobbyDb, WH_config } from './config/dbConfig.js';
 import adminRoutes from './routes/adminRoutes.js';
 import editCharacterRoutes from './routes/editCharacterRoutes.js';
 import updateRoutes from './routes/updateRoutes.js';
@@ -23,6 +24,13 @@ import gameWorldRoutes from './routes/gameWorldRoutes.js';
 import systemStatsRoutes from './routes/systemStatsRoutes.js';
 import checkAvailabilityRoutes from './routes/checkAvailability.js';
 import signinRoutes from './routes/signin.js';
+import pageRoutes from './routes/pageRoutes.js';
+import addBanRoutes from './routes/addBanRoutes.js';
+import GradeMembersRoutes from "./routes/GradeMembersRoutes.js";
+import kickUserRouter from './routes/kickUserRouter.js';
+import WarehouseItemRoutes from './routes/WarehouseItemRoutes.js';
+import monitoringRoutes from './routes/monitoringRoutes.js'
+import gameStatsRoute from './routes/gameStatsRoute.js';
 
 dotenv.config();
 
@@ -59,6 +67,8 @@ const __dirname = path.dirname(__filename);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
 
 // Middleware для удаления завершающего слэша для определённых маршрутов
 app.use((req, res, next) => {
@@ -72,16 +82,32 @@ app.use((req, res, next) => {
 });
 
 // Подключение маршрутов
-app.use('/', adminRoutes);
-app.use('/', editCharacterRoutes);
-app.use('/', updateRoutes);
-app.use('/', profileRoutes);
-app.use('/', signupRoutes);
-app.use('/', addDepositRoutes);
-app.use('/', gameWorldRoutes);
-app.use('/', systemStatsRoutes);
+const routesWithRootPrefix = [
+  adminRoutes,
+  editCharacterRoutes,
+  updateRoutes,
+  profileRoutes,
+  signupRoutes,
+  addDepositRoutes,
+  gameWorldRoutes,
+  systemStatsRoutes,
+  pageRoutes,
+  addBanRoutes,
+  GradeMembersRoutes,
+  WarehouseItemRoutes,
+  monitoringRoutes,
+  gameStatsRoute,
+];
+
+// Подключение маршрутов с префиксом "/"
+routesWithRootPrefix.forEach(route => app.use('/', route));
+
+// Подключение маршрутов с другими префиксами
 app.use('/check-availability', checkAvailabilityRoutes);
 app.use('/signin', signinRoutes);
+app.use('/in-game-web', express.static(path.join(__dirname, './views/in-game-web')));
+app.use(kickUserRouter); // Маршрут для кика
+
 
 // Проверка переменной окружения для логирования в консоль
 const logToConsole = process.env.LOG_TO_CONSOLE === 'true';
@@ -137,6 +163,16 @@ app.get('/api/current-time', (req, res) => {
 app.get('/', (req, res) => {
     const user = req.session.user || null; // Предполагаем, что информация о пользователе хранится в сессии
     res.render('index', { user }); // Передаем объект user в шаблон
+});
+
+app.get('/admin/add-vip', (req, res) => {
+    console.log("Original URL:", req.originalUrl); // Вывод полного URL
+    console.log("UserId:", req.query.userId); // Вывод userId
+
+    res.render('addVip', {
+        pathname: req.originalUrl,
+        userId: req.query.userId
+    });
 });
 
 // Обработчик для всех несуществующих маршрутов (404)

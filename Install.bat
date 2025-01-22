@@ -25,7 +25,8 @@ echo     "chalk": "latest", >> package.json
 echo     "express-session": "latest", >> package.json
 echo     "mysql2": "latest", >> package.json
 echo     "os-utils":"latest", >> package.json
-echo     "pidusage": "latest" >> package.json
+echo     "pidusage": "latest", >> package.json
+echo     "xml2js": "latest" >> package.json
 echo   }, >> package.json
 echo   "devDependencies": {}, >> package.json
 echo   "engines": { >> package.json
@@ -65,6 +66,18 @@ echo PLATFORM_ACCT_DB_PASSWORD=FSmElsXuj3ls8Fq >> .env
 echo PLATFORM_ACCT_DB_SERVER=localhost >> .env
 echo PLATFORM_ACCT_DB_DATABASE=PlatformAcctDb >> .env
 echo. >> .env
+echo # Настройки для GradeMembersDb >> .env
+echo GRADE_MEMBERS_DB_USER=sa >> .env
+echo GRADE_MEMBERS_DB_PASSWORD=FSmElsXuj3ls8Fq >> .env
+echo GRADE_MEMBERS_DB_SERVER=localhost >> .env
+echo GRADE_MEMBERS_DB_DATABASE=GradeMembersDb >> .env
+echo. >> .env
+echo # Настройки для BanDb >> .env
+echo BAN_DB_USER=sa >> .env
+echo BAN_DB_PASSWORD=FSmElsXuj3ls8Fq >> .env
+echo BAN_DB_SERVER=localhost >> .env
+echo BAN_DB_DATABASE=BanDb >> .env
+echo. >> .env
 echo # Настройки для BlGame01 >> .env
 echo BLGAME01_DB_USER=sa >> .env
 echo BLGAME01_DB_PASSWORD=FSmElsXuj3ls8Fq >> .env
@@ -83,11 +96,23 @@ echo LOBBY_DB_PASSWORD=FSmElsXuj3ls8Fq >> .env
 echo LOBBY_DB_SERVER=localhost >> .env
 echo LOBBY_DB_DATABASE=LobbyDB >> .env
 echo. >> .env
-echo # Конфигурация базы данных (Web) >> .env
-echo DB_USER=sa >> .env
-echo DB_PASSWORD=FSmElsXuj3ls8Fq >> .env
-echo DB_SERVER=localhost >> .env
-echo DB_NAME=PlatformAcctDb >> .env
+echo # Настройки для GameWarehouseDB >> .env
+echo GAME_WAREHOUSE_DB_USER=sa >> .env
+echo GAME_WAREHOUSE_DB_PASSWORD=FSmElsXuj3ls8Fq >> .env
+echo GAME_WAREHOUSE_DB_SERVER=localhost >> .env
+echo GAME_WAREHOUSE_DB_DATABASE=GameWarehouseDB >> .env
+echo. >> .env
+echo # Настройки для LevelDb >> .env
+echo LEVEL_DB_USER=sa >> .env
+echo LEVEL_DB_PASSWORD=FSmElsXuj3ls8Fq >> .env
+echo LEVEL_DB_SERVER=localhost >> .env
+echo LEVEL_DB_DATABASE=LevelDb >> .env
+echo. >> .env
+echo # Настройки для GameItemsDB >> .env
+echo GAME_ITEMS_DB_USER=sa >> .env
+echo GAME_ITEMS_DB_PASSWORD=FSmElsXuj3ls8Fq >> .env
+echo GAME_ITEMS_DB_SERVER=localhost >> .env
+echo GAME_ITEMS_DB_DATABASE=GameItemsDB >> .env
 echo. >> .env
 echo # Внешний сервис >> .env
 echo SERVICE_URL=http://127.0.0.1:6605 >> .env

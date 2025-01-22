@@ -18,6 +18,12 @@
             <li class="nav-item <%= pathname === '/admin/system-stats' ? 'active' : '' %>">
                <a class="nav-link" href="/admin/system-stats">System Stats</a>
             </li>
+			<li class="nav-item <%= pathname === '/admin/game-stats' ? 'active' : '' %>">
+               <a class="nav-link" href="/admin/game-stats">Game Stats</a>
+            </li>
+			<li class="nav-item <%= pathname === '/admin/monitoring' ? 'active' : '' %>">
+               <a class="nav-link" href="/admin/monitoring">Monitoring</a>
+            </li>
             <!-- Показываем поле поиска только на странице /admin -->
             <% if (pathname === '/admin') { %>
             <li class="nav-item">

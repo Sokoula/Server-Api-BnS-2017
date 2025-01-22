@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Game-Stats</title>
+      <link href="../css/bootstrap.min.css" rel="stylesheet">
+      <script src="../js/chart.js"></script>
+      <link rel="stylesheet" href="../css/admin.css">
+   </head>
+   <body>
+      <%- include('partials/nav') %>
+      <div class="container mt-5">
+         <div class="header-container mb-4">
+            <h2 class="header-title">Game Server Statistics</h2>
+            <span class="total-count">Total All: </span>
+            <span class="account-count"> Total accounts <span class="accounts-count"><%= statistics.totalUsers %> </span>
+            <span class="creature-count"> | Total accounts with created characters: <span class="created-count"><%= statistics.accountCount %> </span>
+            <span class="deleted-creature-count"> | Deleted characters: <span class="deleted-count"><%= statistics.deletionCount %></span><br>
+            <span class="Money-count">
+            All money:
+            <%= statistics.totalMoney.gold %> <img src="/images/money/gold.png" alt="Gold" class="money-icon" />
+            <%= statistics.totalMoney.silver %> <img src="/images/money/silver.png" alt="Silver" class="money-icon" />
+            <%= statistics.totalMoney.copper %><img src="/images/money/copper.png" alt="Copper" class="money-icon" />   
+            </span>
+         </div>
+         <div class="row">
+            <!-- График рас -->
+            <div class="col-md-3">
+               <h4>Character Races</h4>
+               <div class="chart-container">
+                  <canvas id="raceChart"></canvas>
+               </div>
+               <ul>
+                  <% let colors = ['#4CAF50', '#FF9800', '#2196F3', '#9C27B0']; %>
+                  <% let i = 0; %>
+                  <% for (let race in statistics.races) { %>
+                  <li>
+                     <span class="color-box" style="background-color: <%= colors[i % colors.length] %>;"></span>
+                     <%= race %>:
+                     <%= statistics.races[race] %>
+                  </li>
+                  <% i++; } %>
+               </ul>
+            </div>
+            <!-- График пола -->
+            <div class="col-md-3">
+               <h4>Character Genders</h4>
+               <div class="chart-container">
+                  <canvas id="sexChart"></canvas>
+               </div>
+               <ul>
+                  <li>
+                     <span class="color-box" style="background-color: #2196F3;"></span> Male:
+                     <%= statistics.sexes.male %>
+                  </li>
+                  <li>
+                     <span class="color-box" style="background-color: #FF4081;"></span> Female:
+                     <%= statistics.sexes.female %>
+                  </li>
+               </ul>
+            </div>
+            <!-- График классов -->
+            <div class="col-md-3">
+               <h4>Character Classes</h4>
+               <div class="chart-container">
+                  <canvas id="jobChart"></canvas>
+               </div>
+               <ul>
+                  <% let jobColors = [
+                     '#FF5722', '#FFC107', '#009688', '#795548', '#3F51B5', 
+                     '#673AB7', '#3F9E5F', '#E91E63', '#FF9800', '#8BC34A', 
+                     '#2196F3', '#CDDC39', '#9C27B0', '#607D8B', '#FFEB3B', 
+                     '#4CAF50', '#00BCD4', '#F44336', '#03A9F4', '#795548'
+                     ]; %>
+                  <% let j = 0; %>
+                  <% for (let job in statistics.jobs) { %>
+                  <li>
+                     <span class="color-box" style="background-color: <%= jobColors[j % jobColors.length] %>;"></span>
+                     <%= job %>:
+                     <%= statistics.jobs[job] %>
+                  </li>
+                  <% j++; } %>
+               </ul>
+            </div>
+            <!-- График фракций -->
+            <div class="col-md-3">
+               <h4>Factions</h4>
+               <div class="chart-container">
+                  <canvas id="factionChart"></canvas>
+               </div>
+               <ul>
+                  <li>
+                     <span class="color-box" style="background-color: #009688;"></span> Cerulean Order:
+                     <%= statistics.factions["Cerulean Order"] %>
+                  </li>
+                  <li>
+                     <span class="color-box" style="background-color: #FF5722;"></span> Crimson Legion:
+                     <%= statistics.factions["Crimson Legion"] %>
+                  </li>
+               </ul>
+            </div>
+         </div>
+         <div class="row">
+            <!-- График уровней -->
+            <div class="col-md-3">
+               <h4>Character Levels</h4>
+               <div class="chart-container">
+                  <canvas id="levelChart"></canvas>
+               </div>
+               <ul>
+                  <% let levelColors = ['#FF5722', '#FFC107', '#009688', '#795548', '#3F51B5', '#FF4081', '#E91E63', '#8BC34A', '#FF9800', '#9C27B0', '#00BCD4', '#CDDC39']; %>
+                  <% let l = 0; %>
+                  <% for (let level in statistics.levels) { %>
+                  <li>
+                     <span class="color-box" style="background-color: <%= levelColors[l % levelColors.length] %>;"></span> Level
+                     <%= level %>:
+                     <%= statistics.levels[level] %>
+                  </li>
+                  <% l++; } %>
+               </ul>
+            </div>
+         </div>
+      </div>
+      <div class="container">
+         <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+               <h4>All Characters:</h4>
+            </div>
+            <div class="card-body">
+               <table class="table table-striped table-hover">
+                  <thead class="table-dark">
+                     <tr>
+                        <th>Name</th>
+                        <th>Race</th>
+                        <th>Gender</th>
+                        <th>Class</th>
+                        <th>Money</th>
+                        <th>Deleted</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <% statistics.characters.forEach(character => { %>
+                     <tr>
+                        <td>
+                           <%= character.name %>
+                        </td>
+                        <td>
+                           <%= character.race %>
+                        </td>
+                        <td>
+                           <%= character.sex %>
+                        </td>
+                        <td>
+                           <%= character.job %>
+                        </td>
+                        <td>
+                           <%= character.money.gold %> <img src="/images/money/gold.png" alt="Gold" class="money-icon" />
+                           <%= character.money.silver %> <img src="/images/money/silver.png" alt="Silver" class="money-icon" />
+                           <%= character.money.copper %> <img src="/images/money/copper.png" alt="Copper" class="money-icon" />
+                        </td>
+                        <td class="<%= character.deletionClass %>">
+                           <%= character.deletion %>
+                        </td>
+                     </tr>
+                     <% }) %>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+      </div>
+      <script>
+         // Общие настройки для отключения легенды
+         const commonOptions = {
+           plugins: {
+             legend: {
+               display: false // Отключение легенды
+             }
+           }
+         };
+         
+         // График рас
+         const raceChartData = {
+           labels: <%- JSON.stringify(Object.keys(statistics.races)) %>,
+           datasets: [{
+             data: <%- JSON.stringify(Object.values(statistics.races)) %>,
+             backgroundColor: ['#4CAF50', '#FF9800', '#2196F3', '#9C27B0']
+           }]
+         };
+         
+         new Chart(document.getElementById('raceChart'), {
+           type: 'pie',
+           data: raceChartData,
+           options: commonOptions
+         });
+         
+         // График пола
+         const sexChartData = {
+           labels: ['Male', 'Female'],
+           datasets: [{
+             data: [<%= statistics.sexes.male %>, <%= statistics.sexes.female %>],
+             backgroundColor: ['#2196F3', '#FF4081']
+           }]
+         };
+         
+         new Chart(document.getElementById('sexChart'), {
+           type: 'pie',
+           data: sexChartData,
+           options: commonOptions
+         });
+         
+         // График классов
+         const jobChartData = {
+           labels: <%- JSON.stringify(Object.keys(statistics.jobs)) %>,
+           datasets: [{
+             data: <%- JSON.stringify(Object.values(statistics.jobs)) %>,
+             backgroundColor: ['#FF5722', '#FFC107', '#009688', '#795548', '#3F51B5', 
+         '#673AB7', '#3F9E5F', '#E91E63', '#FF9800', '#8BC34A', 
+         '#2196F3', '#CDDC39', '#9C27B0', '#607D8B', '#FFEB3B', 
+         '#4CAF50', '#00BCD4', '#F44336', '#03A9F4', '#795548']
+           }]
+         };
+         
+         new Chart(document.getElementById('jobChart'), {
+           type: 'pie',
+           data: jobChartData,
+           options: commonOptions
+         });
+         
+         // График фракций
+         const factionChartData = {
+           labels: ['Cerulean Order', 'Crimson Legion'],
+           datasets: [{
+             data: [<%= statistics.factions["Cerulean Order"] %>, <%= statistics.factions["Crimson Legion"] %>],
+             backgroundColor: ['#009688', '#FF5722'],
+             borderWidth: 1
+           }]
+         };
+         
+         new Chart(document.getElementById('factionChart'), {
+           type: 'pie',
+           data: factionChartData,
+           options: commonOptions
+         });
+         
+         // График уровней
+         const levelChartData = {
+           labels: <%- JSON.stringify(Object.keys(statistics.levels)) %>,
+           datasets: [{
+             data: <%- JSON.stringify(Object.values(statistics.levels)) %>,
+             backgroundColor: ['#FF5722', '#FFC107', '#009688', '#795548', '#3F51B5', '#FF4081', '#E91E63', '#8BC34A', '#FF9800', '#9C27B0', '#00BCD4', '#CDDC39']
+           }]
+         };
+         
+         new Chart(document.getElementById('levelChart'), {
+           type: 'pie',
+           data: levelChartData,
+           options: commonOptions
+         });
+      </script>
+   </body>
+</html>

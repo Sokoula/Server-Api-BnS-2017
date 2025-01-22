@@ -80,7 +80,7 @@ body {
 .profile-card {
     position: sticky;
     top: 20px;
-    flex: 0 0 300px;
+    flex: 0 0 325px;
     height: fit-content;
     background-color: #1d242c;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7); /* Замена оранжевой тени на нейтральную черную */
@@ -88,12 +88,23 @@ body {
     transition: box-shadow 0.3s ease; /* Плавный переход для тени */
 }
 
-.profile-card img {
-    border-radius: 50%;
-    border: 5px solid #fc6b01;
-    width: 100px;
-    height: 100px;
+/* Стили только для аватара пользователя */
+.profile-card .user-avatar {
+  border-radius: 50%;
+  border: 5px solid #fc6b01;
+  width: 200px;
+  height: 200px;
 }
+
+/* Стили только для изображения VIP статуса */
+.vip-status-image {
+  border: none !important;
+  border-radius: 0 !important;
+  width: 50px !important;
+  height: 50px !important;
+}
+
+
 
 .card {
     border-radius: 12px;
@@ -126,6 +137,7 @@ body {
 .card-body {
     background-color: #1d242c;
     color: #ffffff;
+	font-family: 'Poppins', Arial, sans-serif;
 }
 
 .card-body .table {
@@ -326,7 +338,72 @@ body {
 }
  @media (min-width: 1200px) {
      .profile-card img {
-         width: 150px;
-         height: 150px;
+         width: 200px;
+         height: 200px;
     }
 }
+
+.custom-modal {
+    background-color: #1d242c; /* Темный фон */
+    border: 2px solid #fc6b01; /* Оранжевая рамка */
+    border-radius: 8px; /* Закругленные углы */
+}
+
+.custom-modal .modal-header {
+    border-bottom: 1px solid #fc6b01; /* Линия в заголовке */
+}
+
+.custom-modal .modal-footer {
+    border-top: 1px solid #fc6b01; /* Линия внизу */
+}
+
+.custom-modal .btn-close-white {
+    filter: invert(1); /* Белая кнопка закрытия */
+}
+
+.custom-modal .btn-outline-warning {
+    color: #fc6b01;
+    border-color: #fc6b01;
+}
+
+.custom-modal .btn-outline-warning:hover {
+    background-color: #fc6b01;
+    color: #1d242c;
+}
+
+.custom-modal-title {
+  font-family: 'Poppins', Arial, sans-serif;
+  font-display: swap;
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+.avatar-option {
+    width: 140px; /* Устанавливаем фиксированную ширину */
+    height: 140px; /* Устанавливаем фиксированную высоту */
+    object-fit: cover; /* Сохраняем пропорции */
+    border: 2px solid #fc6b01; /* Оранжевая рамка */
+    border-radius: 8px; /* Закругляем углы */
+	margin: 1px; /* Добавляем равномерные отступы со всех сторон */
+    margin-bottom: 1px; /* Отступ снизу */
+}
+
+.col-4 {
+    display: flex; /* Центрирование содержимого */
+    justify-content: center; /* Горизонтальное выравнивание */
+    margin-bottom: 1px; /* Отступ снизу */
+}
+
+.avatar-option:hover {
+    border-color: #ff8800; /* Изменение цвета рамки при наведении */
+	box-shadow: 0 0 18px #51CBEE; /* Свечение рамки при наведении */ 
+    outline: none;  
+    transform: scale(1.1); /* Легкое увеличение при наведении */
+    transition: all 0.2s ease-in-out; /* Анимация увеличения */
+}
+
+.modal-body {
+    padding: 20px; /* Добавляем отступы в модальном окне */
+}
+
+

@@ -89,13 +89,21 @@ This API server has been tested on a private Blade & Soul test server.
 
 ## Key Features
 
+- **WebSite**: A comprehensive website offering seamless user experience with account profile viewing, including detailed character data, alongside an administrative panel for efficient user and content management.
 - **User Authentication**: Secure user registration and login with email and password validation.
+- **Admin Control Panel**: Comprehensive Admin Dashboard for efficient server and user management.
 - **Profile Management**: Full support for viewing and updating user profiles, including character data and account information.
 - **Character Management**: Tools for editing character details like faction, race, job, and other attributes.
 - **Virtual Currency Transactions**: APIs to manage and add in-game currency to user accounts.
+- **Item Management and Distribution**: Search the database for items by ItemID and dispatch them to user account characters via the admin panel.
+- **"Account Banning and Player Kicking**: Ability to impose a temporary or permanent account ban on a user, as well as the ability to promptly kick a player from the server.
+- **VIP Privileges Managementn**: Effortlessly manage and assign VIP privileges to users through the admin panel. This feature allows administrators to grant special in-game benefits and access to premium content, ensuring an enhanced experience for VIP players.
+- **Game Server Monitoring**: Real-time server monitoring that provides detailed insights into the number of players online, and their activity. This feature enables administrators to track server health,and monitor player.
+- **Game Server Statistics**: Game statistics with insightful charts displaying the number of registered accounts, including breakdowns by character races, genders, classes, factions, and levels.
 - **Database Integration**: Utilizes Microsoft SQL Server for managing user accounts, in-game data, and virtual currencies.
 - **Logging**: Optional logging feature, controlled through environment variables, allows detailed logging to console for debugging and monitoring.
 - **Scalability**: Designed to support a large number of users and database operations, ensuring performance and security for a Blade & Soul private server.
+- **System Statistics**: Monitor CPU Usage, Memory Usage, and Server API Process Information to assess server load and performance in real time, helping ensure smooth operation and quick issue resolution.
 
 ## Requirements
 
@@ -146,9 +154,20 @@ To set up the API server, follow these steps:
     - Create `Start_Api.bat` for easy server startup.
     - Create the `.env` file with essential configuration for connecting to the game databases.
     - Install the required npm packages:
-      - `express`, `mssql`, `dotenv`, `axios`, `cors`, `ejs`, `argon2`, `bcrypt`, `chalk`, `express-session`, `mysql2`, `os-utils`, `pidusage`.
+      - `express`, `mssql`, `dotenv`, `axios`, `cors`, `ejs`, `argon2`, `bcrypt`, `chalk`, `express-session`, `mysql2`, `os-utils`, `pidusage`, `xml2js`.
 
-4. **Configuration**:
+4. **Configuration of Categories and Display of Items in Item Management and Distribution** 
+ 
+4.1. **Database Restore Script**:  
+     The `restore_databases.sql` script is provided to help you restore the `GameItemsDB` database from the backup file.  
+     > **Note:** Before running the script, ensure that you modify the following paths within it:  
+     > - Specify the path to the backup file: `"Path to the backup file"`.  
+     > - Set the location for the primary database file (`.mdf`).  
+     > - Set the location for the transaction log file (`.ldf`).
+	 
+*Note: The full **README.md** file with detailed instructions for setting up the **"Sending Items"** functionality can be found in the `GAME_ITEMS_DB` folder. It includes guidance on restoring the database, configuring image filenames, and managing item data required for proper system functionality. Please refer to this document for complete setup steps and further details.*
+
+5. **Configuration**:
 
     After running the installation script, the `.env` file will be generated with default configurations. Make sure to adjust database credentials and other environment variables if needed:
     
@@ -160,7 +179,7 @@ To set up the API server, follow these steps:
 
     These variables are used to connect to the Blade & Soul platform accounts, game data, and other services.
 
-5. **Start the API Server**:
+6. **Start the API Server**:
 
     Once everything is installed, you can start the server using the provided `Start_Api.bat` file or manually via:
 
@@ -170,7 +189,7 @@ To set up the API server, follow these steps:
 
     The server will be accessible at `http://localhost:3000`.
 	
-6. **Admin Panel**:
+7. **Admin Panel**:
 
     The admin panel for managing game-related data can be accessed via the following URL:
 
@@ -298,4 +317,34 @@ If you are looking for the **Blade & Soul** Game API Server for the 2020 version
      Made small improvements and optimizations to enhance code stability and readability.
 
 </details>
+
+<details>
+  <summary><b>Change Log: 22/1/2025</b></summary>
+
+  1. **Added item management and distribution**:  
+     Added the ability to search for items by ItemID in the database and send them to characters on user accounts via the admin panel.
+
+  2. **Added account blocking and player exclusion**:  
+     Introduced the ability to apply temporary or permanent account bans and quickly remove players from the server.
+
+  3. **Added VIP privileges management**:  
+     Simplified the process of managing and assigning VIP privileges to users via the admin panel, granting access to premium content and special in-game advantages for VIP players.
+	 
+  4. **Added game server monitoring**:  
+     Implemented real-time server monitoring, providing detailed information on the number of players online and their activity.
+
+  5. **Added game server statistics**:  
+     Game statistics with charts displaying the number of registered accounts, including breakdowns by character race, gender, class, faction, and level, along with additional insights and data for administrators.
+	
+  6. **Added VIP status display in user profiles**:  
+     Updated the player's account profile page on the website to include detailed information about VIP privileges, such as the current VIP rank, status, and expiration date.
+
+  7. **Added avatar selection for user profiles**:  
+     Introduced the ability for users to choose their avatar from a selection of 16 available options, enhancing personalization on the account profile page.
+
+  8. **Minor code tweaks and adjustments**:  
+     Made small improvements and optimizations to enhance code stability and readability.
+     
+</details>
+
 

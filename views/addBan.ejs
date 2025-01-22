@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ban Management</title>
+	<link rel="icon" href="/images/favicon-admin.png" type="image/png">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <style>
+        .btn-custom {
+            margin-top: 10px;
+        }
+        .ban-table {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('partials/nav') %>
+        <div class="container ">
+            <h2>Ban Management</h2>
+            <strong>User ID:</strong>
+            <%= userId %>
+                <div id="statusMessage" class="alert alert-success" role="alert">
+                    After clicking the "Add Ban" button, the user's ban process is activated. The banned user will be automatically disconnected from the server after 1 minute. At the same time, a 3-minute timer starts to restart the "BanSrv" service, which manages the ban system.
+                    <br>  During the service restart, adding a new ban is not possible.
+                </div>
+
+                <form id="banForm" action="/admin/add-ban">
+                    <input type="hidden" name="userId" id="userId" value="<%= userId %>">
+
+                    <div class="form-group mb-3">
+                        <label for="reason"><strong>Ban Reason:</strong></label>
+                        <select class="form-control" id="reason" name="reason" required>
+                            <% if (banReasons && banReasons.length > 0) { %>
+                                <% banReasons.forEach(reason => { %>
+                                    <option value="<%= reason.BanReasonCode %>">
+                                        <%= reason.BanReason %>
+                                    </option>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <option disabled>No ban reasons available</option>
+                                            <% } %>
+                        </select>
+                    </div>
+
+                    <div class="form-group ">
+                        <label for="reason"><strong>Ban Duration:</strong></label>
+                        <select class="form-control" id="duration" name="duration" required>
+                            <option value="1">1 Hour</option>
+                            <option value="24">1 Day</option>
+                            <option value="168">1 Week</option>
+                            <option value="720">1 Month</option>
+                            <option value="permanent">Permanent</option>
+                        </select>
+                    </div>
+
+                    <!-- Кнопки для бана и кика -->
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn btn-danger">Add Ban</button>
+                        <button type="button" id="kickUserBtn" class="btn btn-warning">Kick User</button>
+                    </div>
+                    <div id="countdownContainer" style="display: none; margin-top: 15px;">
+                        <p class="text-info">Restarting the BanSrv , the service will be available in ... <span id="countdownTimer">3:00</span></p>
+                    </div>
+                </form>
+
+                <hr>
+
+                <!-- Список текущих банов -->
+                <h2>Active Bans</h2>
+                <div id="bansContainer">
+                    <% if (bans && bans.length > 0) { %>
+                        <table class="table table-bordered ban-table">
+                            <thead>
+                                <tr>
+                                    <th>Ban ID</th>
+                                    <th>Effective From</th>
+                                    <th>Effective To</th>
+                                    <th>Reason</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% bans.forEach(ban => { %>
+                                    <tr>
+                                        <td>
+                                            <%= ban.BanId %>
+                                        </td>
+                                        <td>
+                                            <%= new Date(ban.EffectiveFrom).toLocaleString() %>
+                                        </td>
+                                        <td>
+                                            <%= new Date(ban.EffectiveTo).toLocaleString() %>
+                                        </td>
+                                        <td>
+                                            <%= ban.BanReason %>
+                                        </td>
+                                        <td class="<%= ban.UnbanStatus === 1 ? 'text-success fw-bold' : 'text-danger fw-bold' %>">
+                                            <%= ban.UnbanStatus === 1 ? 'Active' : 'Inactive' %>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                        <% } else { %>
+                            <p>No active bans for this user.</p>
+                            <% } %>
+                </div>
+
+        </div>
+        <div id="toastContainer" class="toast-container"></div>
+
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+            // Кик пользователя
+            document.getElementById('kickUserBtn').addEventListener('click', async function () {
+                const userId = document.getElementById('userId').value;
+        
+                if (!userId) {
+                    showToast('User ID is missing!', 'danger');
+                    return;
+                }
+        
+                try {
+                    const response = await fetch(`/admin/kick-user?userId=${userId}`);
+                    const result = await response.json();
+        
+                    if (result.success) {
+                        showToast(`User ${result.message}`, 'success');
+                        refreshBans(); // Обновление списка банов
+                    } else {
+                        showToast(`Error: ${result.message}`, 'danger');
+                    }
+                } catch (err) {
+                    showToast('An unexpected error occurred during the kick operation.', 'danger');
+                    console.error(err);
+                }
+            });
+        
+            // Добавление бана
+            document.getElementById('banForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+
+    try {
+        const response = await fetch(form.action || '/admin/add-ban', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            const message = await response.text();
+            showToast('Ban added successfully!', 'success');
+			showToast('The user will be kicked automatically in 1 minute.', 'info');
+            startCountdown(180); // Запускаем отсчёт (3 минуты)
+            refreshBans(); // Обновление списка банов
+        } else {
+            const error = await response.text();
+            showToast(`Error: ${error}`, 'danger');
+        }
+    } catch (err) {
+        showToast('An unexpected error occurred while adding the ban.', 'danger');
+        console.error(err);
+    }
+	
+	setTimeout(async () => {
+    const userId = document.getElementById('userId').value;
+    if (!userId) {
+        showToast('User ID is missing!', 'danger');
+        return;
+    }
+
+    try {
+        const response = await fetch(`/admin/kick-user?userId=${userId}`);
+        const result = await response.json();
+
+        if (result.success) {
+            showToast(`User ${result.message}`, 'success');
+            refreshBans(); // Обновление списка банов
+        } else {
+            showToast(`Error: ${result.message}`, 'danger');
+        }
+    } catch (err) {
+        showToast('An unexpected error occurred during the kick operation.', 'danger');
+        console.error(err);
+    }
+}, 60000); // 60000 миллисекунд = 1 минута
+
+});
+
+        
+            // Функция отображения уведомлений
+            function showToast(message, type = 'success') {
+                const toastContainer = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast align-items-center text-bg-${type} border-0 mb-2`;
+                toast.setAttribute('role', 'alert');
+                toast.innerHTML = `
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                `;
+        
+                toastContainer.appendChild(toast);
+        
+                const bsToast = new bootstrap.Toast(toast);
+                bsToast.show();
+        
+                toast.addEventListener('hidden.bs.toast', () => {
+                    toast.remove();
+                });
+            }
+        
+            // Функция обновления списка банов
+            async function refreshBans() {
+                try {
+                    const response = await fetch(window.location.href);
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newBans = doc.getElementById('bansContainer').innerHTML;
+                    document.getElementById('bansContainer').innerHTML = newBans;
+                } catch (err) {
+                    console.error('Failed to refresh bans:', err);
+                }
+            }
+        });
+		
+		function startCountdown(duration) {
+    const countdownContainer = document.getElementById('countdownContainer');
+    const countdownTimer = document.getElementById('countdownTimer');
+
+    countdownContainer.style.display = 'block';
+    let remainingTime = duration;
+
+    const updateTimerDisplay = () => {
+        const minutes = Math.floor(remainingTime / 60);
+        const seconds = remainingTime % 60;
+        countdownTimer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    };
+
+    updateTimerDisplay(); // Отображаем начальное время
+
+    const interval = setInterval(() => {
+        remainingTime--;
+
+        if (remainingTime <= 0) {
+            clearInterval(interval);
+            countdownContainer.style.display = 'none';
+            showToast('Service restart initiated!', 'success');
+
+            // Отправить запрос на перезагрузку сервиса
+            restartService();
+        } else {
+            updateTimerDisplay();
+        }
+    }, 1000);
+}
+
+
+async function restartService() {
+    try {
+        const response = await fetch('/admin/restart-service', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+        });
+        
+        if (response.ok) {
+            showToast('Service has been successfully restarted!', 'success');
+        } else {
+            const error = await response.text();
+            showToast(`Error restarting service: ${error}`, 'danger');
+        }
+    } catch (err) {
+        showToast('An unexpected error occurred while restarting the service.', 'danger');
+        console.error(err);
+    }
+}
+        </script>
+</body>
+
+</html>

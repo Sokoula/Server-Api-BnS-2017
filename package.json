@@ -19,7 +19,8 @@
     "express-session": "latest", 
     "mysql2": "latest", 
     "os-utils":"latest", 
-    "pidusage": "latest" 
+    "pidusage": "latest", 
+    "xml2js": "latest" 
   }, 
   "devDependencies": {}, 
   "engines": { 

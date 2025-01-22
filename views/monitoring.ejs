@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Monitoring</title>
+	  <link rel="icon" href="/images/favicon-admin.png" type="image/png">
+      <link href="../css/bootstrap.min.css" rel="stylesheet">
+      <link rel="stylesheet" href="../css/admin.css">
+   </head>
+   <body>
+      <%- include('partials/nav') %>
+      <div class="container mt-5">
+         <div class="header-container mb-4">
+            <h2 class="header-title">Monitoring</h2>
+            <span class="account-count"> Total Online Users: <span class="accounts-count"><%= onlineCount %> </span>
+            </span>
+            <a href="#" class="ms-2 text-decoration-none" data-bs-toggle="modal" data-bs-target="#logModal" style="font-weight: bold; color: #0dcaf0;">View Full Response</a>
+         </div>
+         <table class="table table-bordered table-hover table-striped">
+            <thead class="table-dark">
+               <tr>
+                  <th>#</th>
+                  <th>User Center</th>
+                  <th>Game Code</th>
+                  <th>User ID</th>
+                  <th>User Name</th>
+                  <th>Pc Name</th>
+                  <th>Client Net Address</th>
+                  <th>Login Time</th>
+                  <th>Status</th>
+                  <th>Logins</th>
+               </tr>
+            </thead>
+            <tbody>
+               <% if (users.length > 0) { %>
+               <% users.forEach((user, index) => { %>
+               <tr>
+                  <td>
+                     <%= index + 1 %>
+                  </td>
+                  <td>
+                     <%= user.UserCenter %>
+                  </td>
+                  <td>
+                     <%= user.GameCode %>
+                  </td>
+                  <td>
+                     <a href="/admin/edit-character?userName=<%= user.UserName %>" class="text-primary text-decoration-none">
+                     <%= user.UserId %>
+                     </a>
+                  </td>
+                  <td>
+                     <%= user.UserName %>
+                  </td>
+                  <td>
+                     <%= user.PcName._ %>
+                  </td>
+                  <td>
+                     <%= user.ClientNetAddress %>
+                  </td>
+                  <td>
+                     <%= user.LoginTime %>
+                  </td>
+                  <td><span style="font-weight: bold; color: green;"><%= user.Status %></span></td>
+                  <td>
+                     <%= user.Logins %>
+                  </td>
+               </tr>
+               <% }) %>
+               <% } else { %>
+               <tr>
+                  <td colspan="10" class="text-center">No data available</td>
+               </tr>
+               <% } %>
+            </tbody>
+         </table>
+         <!-- Модальное окно для отображения логов -->
+         <div class="modal fade" id="logModal" tabindex="-1" aria-labelledby="logModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title" id="logModalLabel">Full Response</h5>
+                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                     <pre><%= JSON.stringify(jsonData, null, 2) %></pre>
+                     <!-- Отображаем JSON-лог -->
+                  </div>
+                  <div class="modal-footer">
+                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- Bootstrap JS -->
+      <script src="../js/bootstrap.bundle.min.js"></script>
+   </body>
+</html>

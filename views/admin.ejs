@@ -53,8 +53,11 @@
                      </form>
                   </td>
                   <td>
-                     <a href="admin/edit-character?userName=<%= user.UserName %>" class="btn btn-primary btn-custom">Edit Characters</a>
-                     <a href="admin/add-deposit?userId=<%= user.UserId %>" class="btn btn-secondary btn-custom">Add Deposit</a>
+                     <a href="admin/edit-character?userName=<%= user.UserName %>" class="btn btn-outline-primary btn-sm">Edit Characters</a>
+                     <a href="admin/add-deposit?userId=<%= user.UserId %>" class="btn btn-outline-success btn-sm">Add Deposit</a>
+					 <a href="admin/add-item?userId=<%= user.UserId %>" class="btn btn-outline-info btn-sm">Add Item</a> 
+					 <a href="admin/add-vip?userId=<%= user.UserId %>" class="btn btn-outline-warning btn-sm">V.I.P Management</a>
+					 <a href="admin/add-ban?userId=<%= user.UserId %>" class="btn btn-outline-danger btn-sm">Ban Management</a>
                   </td>
                </tr>
                <% }) %>
@@ -183,8 +186,11 @@
                          </form>
                      </td>
                      <td>
-                         <a href="admin/edit-character?userName=${user.UserName}" class="btn btn-primary btn-custom">Edit Characters</a>
-                         <a href="admin/add-deposit?userId=${user.UserId}" class="btn btn-secondary btn-custom">Add Deposit</a>
+                         <a href="admin/edit-character?userName=${user.UserName}" class="btn btn-outline-primary btn-sm">Edit Characters</a>
+                         <a href="admin/add-deposit?userId=${user.UserId}" class="btn btn-outline-success btn-sm">Add Deposit</a>
+						 <a href="admin/add-item?userId=${user.UserId}" class="btn btn-outline-info btn-sm">Add Item</a>
+						 <a href="admin/add-vip?userId=${user.UserId}" class="btn btn-outline-warning btn-sm">V.I.P Management</a>
+						 <a href="admin/add-ban?userId=${user.UserId}" class="btn btn-outline-danger btn-sm">Ban Management</a>						 
                      </td>
                  `;
                  tableBody.appendChild(row);

@@ -48,6 +48,7 @@
                </table>
             </div>
          </div>
+         <!-- GameAccountExp с двумя колонками -->
          <!-- Раздел Character Details -->
          <div class="accordion mb-4" id="accordionExample">
             <% creatures.forEach((creature, index) => { %>
@@ -73,13 +74,13 @@
                      <div class="form-container">
                         <% const fields = [
                            { label: 'PC ID', field: 'pcid', type: 'text' },
-                           { label: 'Game Account ID', field: 'game_account_id', type: 'text' },
+                           { label: 'Game Account ID', field: 'game_account_id', type: 'text', readonly: true },
                            { label: 'World ID', field: 'world_id', type: 'text' },
                            { label: 'Race', field: 'race', type: 'text' },
                            { label: 'Sex', field: 'sex', type: 'text' },
                            { label: 'Job', field: 'job', type: 'text' },
                            { label: 'Name', field: 'name', type: 'text' },
-                           { label: 'Level', field: 'level', type: 'number', min: 0, max: 55, step: 1 },
+                           { label: 'Level', field: 'level', type: 'number', min: 0, max: 2147483647, step: 1 },
                            { label: 'EXP', field: 'exp', type: 'number', min: 0, max: 2147483647, step: 1 },
                            { label: 'EXP Boost', field: 'exp_boost', type: 'number', min: 0, max: 2147483647, step: 1 },
                            { label: 'Mastery Level', field: 'mastery_level', type: 'number', min: 0, max: 32767, step: 1 },
@@ -88,8 +89,8 @@
                            { label: 'HP', field: 'hp', type: 'number', min: 0, max: 2147483647, step: 1 },
                            { label: 'Money', field: 'money', type: 'number', min: 0, max: 2147483647, step: 1 },
                            { label: 'Money Diff', field: 'money_diff', type: 'number', min: -2147483648, max: 2147483647, step: 1 },
-                           { label: 'Faction', field: 'faction', type: 'number', min: 0, max: 1, step: 1 },
-                           { label: 'Faction2', field: 'faction2', type: 'number', min: 0, max: 1, step: 1 },
+                           { label: 'Faction', field: 'faction', type: 'text' },
+                           { label: 'Faction2', field: 'faction2', type: 'text' },
                            { label: 'Faction Reputation', field: 'faction_reputation', type: 'number', min: -2147483648, max: 2147483647, step: 1 },
                            { label: 'Achievement ID', field: 'achievement_id', type: 'number', min: 0, max: 32767, step: 1 },
                            { label: 'Achievement Step', field: 'achievement_step', type: 'number', min: 0, max: 32767, step: 1 },
@@ -124,7 +125,7 @@
                               <input type="hidden" name="userName" value="<%= UserName %>">
                               <% if (field.type === 'select') { %>
                               <select class="form-control" id="<%= field.field %>-<%= creature.pcid %>" name="value">
-                                 <!-- Options should be dynamically generated based on field.field -->
+                                 <!-- Опции для select должны быть динамически созданы -->
                               </select>
                               <% } else { %>
                               <input 
@@ -133,102 +134,104 @@
                                  id="<%= field.field %>-<%= creature.pcid %>" 
                                  name="value" 
                                  value="<%= creature[field.field] %>" 
-                                 min="<%= field.min %>" 
-                                 max="<%= field.max %>" 
-                                 step="<%= field.step %>" 
-                                 <%= (field.field === 'pcid' || field.field === 'game_account_id') ? 'readonly' : '' %>>
+                                 <%= field.min ? `min="${field.min}"` : '' %> 
+                                 <%= field.max ? `max="${field.max}"` : '' %> 
+                                 <%= field.step ? `step="${field.step}"` : '' %>
+								 <%= field.field === 'pcid' ? 'readonly' : '' %> 
+								 <%= field.field === 'game_account_id' ? 'readonly' : '' %> > 
                               <% } %>
                               <div class="update-button-container">
                                  <button type="submit" class="btn btn-primary">Update</button>
                               </div>
                            </form>
                            <p class="description">
-                              <% if (field.field === 'pcid') { %>
-                              The ID of the PC associated with the character.
-                              <% } else if (field.field === 'game_account_id') { %>
-                              The ID of the game account associated with the character.
-                              <% } else if (field.field === 'world_id') { %>
-                              The ID of the world the character is in.
-                              <% } else if (field.field === 'race') { %>
-                              The race of the character.
-                              <% } else if (field.field === 'sex') { %>
-                              The sex of the character.
-                              <% } else if (field.field === 'job') { %>
-                              The job or class of the character.
-                              <% } else if (field.field === 'name') { %>
-                              The name of the character.
-                              <% } else if (field.field === 'level') { %>
-                              The level of the character. The value must be between 0 and 2147483647.
-                              <% } else if (field.field === 'exp') { %>
-                              The experience points of the character. The value must be between 0 and 2147483647.
-                              <% } else if (field.field === 'exp_boost') { %>
-                              The experience boost multiplier for the character.
-                              <% } else if (field.field === 'mastery_level') { %>
-                              The mastery level of the character. The value must be between 0 and 32767.
-                              <% } else if (field.field === 'mastery_exp') { %>
-                              The mastery experience points of the character. The value must be between 0 and 2147483647.
-                              <% } else if (field.field === 'mastery_penalty_exp') { %>
-                              The penalty experience points for mastery, which are deducted from the character's mastery EXP.
-                              <% } else if (field.field === 'hp') { %>
-                              The health points of the character. The value must be between 0 and 2147483647.
-                              <% } else if (field.field === 'money') { %>
-                              The amount of money the character has. The value must be between 0 and 2147483647.
-                              <% } else if (field.field === 'money_diff') { %>
-                              The difference in money for the character. The value must be between -2147483648 and 2147483647.
-                              <% } else if (field.field === 'faction') { %>
-                              The faction of the character. Possible values: 1 - Crimson Legion, 2 - Cerulean Order.
-                              <% } else if (field.field === 'faction2') { %>
-                              The secondary faction of the character.
-                              <% } else if (field.field === 'faction_reputation') { %>
-                              The reputation with factions. The value must be between -2147483648 and 2147483647.
-                              <% } else if (field.field === 'achievement_id') { %>
-                              The achievement ID for the character.
-                              <% } else if (field.field === 'achievement_step') { %>
-                              The achievement step or progress for the character.
-                              <% } else if (field.field === 'ability_achievement_id') { %>
-                              The ability achievement ID for the character.
-                              <% } else if (field.field === 'ability_achievement_step') { %>
-                              The ability achievement step or progress for the character.
-                              <% } else if (field.field === 'enter_world_duration') { %>
-                              The duration (in seconds) the character has spent in the world.
-                              <% } else if (field.field === 'combat_duration') { %>
-                              The total time (in seconds) the character has spent in combat.
-                              <% } else if (field.field === 'inventory_size') { %>
-                              The size of the character's inventory. The value must be between 8 and 96.
-                              <% } else if (field.field === 'depository_size') { %>
-                              The size of the character's depository. The value must be between 8 and 80.
-                              <% } else if (field.field === 'wardrobe_size') { %>
-                              The size of the character's wardrobe. The value must be between 8 and 80.
-                              <% } else if (field.field === 'builder_right') { %>
-                              The builder rights of the character (can the character build structures in the world?).
-                              <% } else if (field.field === 'production_1') { %>
-                              The production skill level for the first production activity of the character.
-                              <% } else if (field.field === 'production_2') { %>
-                              The production skill level for the second production activity of the character.
-                              <% } else if (field.field === 'gathering_1') { %>
-                              The gathering skill level for the first gathering activity of the character.
-                              <% } else if (field.field === 'gathering_2') { %>
-                              The gathering skill level for the second gathering activity of the character.
-                              <% } else if (field.field === 'production_1_exp') { %>
-                              The experience points for the first production activity.
-                              <% } else if (field.field === 'production_2_exp') { %>
-                              The experience points for the second production activity.
-                              <% } else if (field.field === 'gathering_1_exp') { %>
-                              The experience points for the first gathering activity.
-                              <% } else if (field.field === 'gathering_2_exp') { %>
-                              The experience points for the second gathering activity.
-                              <% } else if (field.field === 'duel_point') { %>
-                              The points earned by the character in duels.
-                              <% } else if (field.field === 'party_battle_point') { %>
-                              The points earned by the character in party battles.
-                              <% } else if (field.field === 'field_play_point') { %>
-                              The points earned by the character in field play activities.
-                              <% } else if (field.field === 'shop_sale_count') { %>
-                              The number of items the character has sold in the shop.
-                              <% } else if (field.field === 'heart_count') { %>
-                              The number of hearts the character has collected.
-                              <% } %>
-                           </p>
+  <% if (field.field === 'pcid') { %>
+    The ID of the PC associated with the character.
+  <% } else if (field.field === 'game_account_id') { %>
+    The ID of the game account associated with the character.
+  <% } else if (field.field === 'world_id') { %>
+    The ID of the world the character is in.
+  <% } else if (field.field === 'race') { %>
+    The race of the character.
+  <% } else if (field.field === 'sex') { %>
+    The sex of the character.
+  <% } else if (field.field === 'job') { %>
+    The job or class of the character.
+  <% } else if (field.field === 'name') { %>
+    The name of the character.
+  <% } else if (field.field === 'level') { %>
+    The level of the character. The value must be between 0 and 2147483647.
+  <% } else if (field.field === 'exp') { %>
+    The experience points of the character. The value must be between 0 and 2147483647.
+  <% } else if (field.field === 'exp_boost') { %>
+    The experience boost multiplier for the character.
+  <% } else if (field.field === 'mastery_level') { %>
+    The mastery level of the character. The value must be between 0 and 32767.
+  <% } else if (field.field === 'mastery_exp') { %>
+    The mastery experience points of the character. The value must be between 0 and 2147483647.
+  <% } else if (field.field === 'mastery_penalty_exp') { %>
+    The penalty experience points for mastery, which are deducted from the character's mastery EXP.
+  <% } else if (field.field === 'hp') { %>
+    The health points of the character. The value must be between 0 and 2147483647.
+  <% } else if (field.field === 'money') { %>
+    The amount of money the character has. The value must be between 0 and 2147483647.
+  <% } else if (field.field === 'money_diff') { %>
+    The difference in money for the character. The value must be between -2147483648 and 2147483647.
+  <% } else if (field.field === 'faction') { %>
+    The faction of the character. Possible values: 1 - Crimson Legion, 2 - Cerulean Order.
+  <% } else if (field.field === 'faction2') { %>
+    The secondary faction of the character.
+  <% } else if (field.field === 'faction_reputation') { %>
+    The reputation with factions. The value must be between -2147483648 and 2147483647.
+  <% } else if (field.field === 'achievement_id') { %>
+    The achievement ID for the character.
+  <% } else if (field.field === 'achievement_step') { %>
+    The achievement step or progress for the character.
+  <% } else if (field.field === 'ability_achievement_id') { %>
+    The ability achievement ID for the character.
+  <% } else if (field.field === 'ability_achievement_step') { %>
+    The ability achievement step or progress for the character.
+  <% } else if (field.field === 'enter_world_duration') { %>
+    The duration (in seconds) the character has spent in the world.
+  <% } else if (field.field === 'combat_duration') { %>
+    The total time (in seconds) the character has spent in combat.
+  <% } else if (field.field === 'inventory_size') { %>
+    The size of the character's inventory. The value must be between 8 and 96.
+  <% } else if (field.field === 'depository_size') { %>
+    The size of the character's depository. The value must be between 8 and 80.
+  <% } else if (field.field === 'wardrobe_size') { %>
+    The size of the character's wardrobe. The value must be between 8 and 80.
+  <% } else if (field.field === 'builder_right') { %>
+    The builder rights of the character (can the character build structures in the world?).
+  <% } else if (field.field === 'production_1') { %>
+    The production skill level for the first production activity of the character.
+  <% } else if (field.field === 'production_2') { %>
+    The production skill level for the second production activity of the character.
+  <% } else if (field.field === 'gathering_1') { %>
+    The gathering skill level for the first gathering activity of the character.
+  <% } else if (field.field === 'gathering_2') { %>
+    The gathering skill level for the second gathering activity of the character.
+  <% } else if (field.field === 'production_1_exp') { %>
+    The experience points for the first production activity.
+  <% } else if (field.field === 'production_2_exp') { %>
+    The experience points for the second production activity.
+  <% } else if (field.field === 'gathering_1_exp') { %>
+    The experience points for the first gathering activity.
+  <% } else if (field.field === 'gathering_2_exp') { %>
+    The experience points for the second gathering activity.
+  <% } else if (field.field === 'duel_point') { %>
+    The points earned by the character in duels.
+  <% } else if (field.field === 'party_battle_point') { %>
+    The points earned by the character in party battles.
+  <% } else if (field.field === 'field_play_point') { %>
+    The points earned by the character in field play activities.
+  <% } else if (field.field === 'shop_sale_count') { %>
+    The number of items the character has sold in the shop.
+  <% } else if (field.field === 'heart_count') { %>
+    The number of hearts the character has collected.
+  <% } %>
+</p>
+
                         </div>
                         <% }); %>
                      </div>
