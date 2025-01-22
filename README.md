@@ -165,7 +165,8 @@ To set up the API server, follow these steps:
      > - Set the location for the primary database file (`.mdf`).  
      > - Set the location for the transaction log file (`.ldf`).
 	 
-*Note: The full **README.md** file with detailed instructions for setting up the **"Sending Items"** functionality can be found in the `GAME_ITEMS_DB` folder. It includes guidance on restoring the database, configuring image filenames, and managing item data required for proper system functionality. Please refer to this document for complete setup steps and further details.*
+*Note: The full [**README.md**](https://github.com/war100ck/Server-Api-BnS-2017/tree/main/GAME_ITEMS_DB)
+ file with detailed instructions for setting up the **"Sending Items"** functionality can be found in the `GAME_ITEMS_DB` folder. It includes guidance on restoring the database, configuring image filenames, and managing item data required for proper system functionality. Please refer to this document for complete setup steps and further details.*
 
 5. **Configuration**:
 
