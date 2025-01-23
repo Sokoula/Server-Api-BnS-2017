@@ -90,12 +90,6 @@ echo VIRTUAL_CURRENCY_DB_PASSWORD=FSmElsXuj3ls8Fq >> .env
 echo VIRTUAL_CURRENCY_DB_SERVER=localhost >> .env
 echo VIRTUAL_CURRENCY_DB_DATABASE=VirtualCurrencyDb >> .env
 echo. >> .env
-echo # Настройки для LobbyDB >> .env
-echo LOBBY_DB_USER=sa >> .env
-echo LOBBY_DB_PASSWORD=FSmElsXuj3ls8Fq >> .env
-echo LOBBY_DB_SERVER=localhost >> .env
-echo LOBBY_DB_DATABASE=LobbyDB >> .env
-echo. >> .env
 echo # Настройки для GameWarehouseDB >> .env
 echo GAME_WAREHOUSE_DB_USER=sa >> .env
 echo GAME_WAREHOUSE_DB_PASSWORD=FSmElsXuj3ls8Fq >> .env
@@ -113,6 +107,12 @@ echo GAME_ITEMS_DB_USER=sa >> .env
 echo GAME_ITEMS_DB_PASSWORD=FSmElsXuj3ls8Fq >> .env
 echo GAME_ITEMS_DB_SERVER=localhost >> .env
 echo GAME_ITEMS_DB_DATABASE=GameItemsDB >> .env
+echo. >> .env
+echo # Конфигурация базы данных (Web) >> .env
+echo DB_USER=sa >> .env
+echo DB_PASSWORD=FSmElsXuj3ls8Fq >> .env
+echo DB_SERVER=localhost >> .env
+echo DB_NAME=PlatformAcctDb >> .env
 echo. >> .env
 echo # Внешний сервис >> .env
 echo SERVICE_URL=http://127.0.0.1:6605 >> .env
