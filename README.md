@@ -345,6 +345,8 @@ If you are looking for the **Blade & Soul** Game API Server for the 2020 version
 
   8. **Minor code tweaks and adjustments**:  
      Made small improvements and optimizations to enhance code stability and readability.
+
+     [Watch the update video on YouTube](https://youtu.be/LbAH0uluWvA?si=b6ft_EsowibnM5s8)
      
 </details>
 
