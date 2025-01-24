@@ -223,7 +223,7 @@ const maxContentLength = 51; // Длина содержимого внутри �
 const lines = [
     "███████████████████████████████████████████████████████",
     `${border}${padLine('', maxContentLength)}${border}`,
-    `${border}${padLine('B&S API SERVER STARTING NOW', maxContentLength)}${border}`,
+    `${border}${padLine('B&S API SERVER 2017 STARTING NOW', maxContentLength)}${border}`,
     `${border}${padLine('SERVER IS RUNNING ON PORT: 3000', maxContentLength)}${border}`,
     `${border}${padLine(`LOCAL IP ADDRESS: ${localIp}`, maxContentLength)}${border}`,
     domainName
