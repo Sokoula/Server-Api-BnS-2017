@@ -54,6 +54,7 @@ html, body {
 body {
     padding-top: 8%; /* Используем padding для отступа */
     font-family: 'Arial', sans-serif;
+	background-color: #1d242c;
     background-image: url('../images/backgrounds/home-style-bg.jpg');
     background-size: cover; /* Покрытие всего экрана */
     background-attachment: fixed; /* Фиксация фона */
