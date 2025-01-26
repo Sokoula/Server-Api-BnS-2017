@@ -3,4 +3,5 @@ Version 1.1.0
 - Fixed file hash mismatch issue
 - Improved file download functionality
 - Added update log support
+- Test AutoUpdate
 ===================
