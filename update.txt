@@ -4,4 +4,8 @@ Version 1.1.0
 - Improved file download functionality
 - Added update log support
 - Test AutoUpdate
+- Test AutoUpdate
+- Test AutoUpdate
+- Test AutoUpdate
+- Test AutoUpdate
 ===================
